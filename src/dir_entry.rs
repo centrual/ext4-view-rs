@@ -332,6 +332,20 @@ impl DirEntry {
         self.path.join(self.name.as_bytes())
     }
 
+    /// Number of the inode this entry points to, as recorded in the
+    /// directory entry itself.
+    ///
+    /// Unlike [`metadata`][Self::metadata], this needs no additional
+    /// read: the number is part of the directory data that has already
+    /// been loaded. That makes it usable where the inode itself cannot
+    /// be read -- a damaged filesystem -- and where only the identity of
+    /// an entry is needed, for example to detect a directory cycle while
+    /// walking a tree.
+    #[must_use]
+    pub fn inode(&self) -> u32 {
+        self.inode.get()
+    }
+
     /// Get the entry's file type.
     /// Number of the inode this entry points to, as recorded in the
     /// directory entry itself.
@@ -622,6 +636,9 @@ mod tests {
         assert!(name.as_str().is_err());
     }
 
+    // `test_util` loads a real file system image from disk, which the crate
+    // only builds with `std`.
+    #[cfg(feature = "std")]
     #[test]
     fn test_dir_entry_inode() {
         let fs = crate::test_util::load_test_disk1();
