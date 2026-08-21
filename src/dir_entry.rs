@@ -347,20 +347,6 @@ impl DirEntry {
     }
 
     /// Get the entry's file type.
-    /// Number of the inode this entry points to, as recorded in the
-    /// directory entry itself.
-    ///
-    /// Unlike [`metadata`][Self::metadata], this needs no additional
-    /// read: the number is part of the directory data that has already
-    /// been loaded. That makes it usable where the inode itself cannot
-    /// be read -- a damaged filesystem -- and where only the identity of
-    /// an entry is needed, for example to detect a directory cycle while
-    /// walking a tree.
-    #[must_use]
-    pub fn inode(&self) -> u32 {
-        self.inode.get()
-    }
-
     pub fn file_type(&self) -> Result<FileType, Ext4Error> {
         // Currently this function cannot fail, but return a `Result` to
         // preserve that option for the future (may be needed for
